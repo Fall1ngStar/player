@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Player</title>
+    <link rel="stylesheet" href="styles/player.css">
+</head>
+<body>
+<div id="player"></div>
+<div id="controls">
+    <input type="range" id="volume">
+    <button id="pause" onclick="pausePlay()">Play/Pause</button>
+    <div id="loading-bar">
+        <div id="loaded" v-bind:style="{width: progress}"></div>
+    </div>
+</div>
+<div id="searcher">
+    <label>
+        Search:
+        <input type="text" v-model="query">
+    </label>
+    <button v-on:click="search">Search video</button>
+    <div class="result">
+        <div class="list">
+            <ul>
+                <li v-for="result in results">
+                    <img v-bind:src="result.snippet.thumbnails.default.url"
+                         v-on:click="play(result.id.videoId)">
+                    Title: {{result.snippet.title}}
+                </li>
+            </ul>
+        </div>
+        <div class="related">
+            <ul>
+                <li v-for="result in related">
+                    <img v-bind:src="result.snippet.thumbnails.default.url">
+                    Title: {{result.snippet.title}}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    let p = require('./player');
+
+    async function pausePlay() {
+        if (await p.player.getPlayerState() === 1) {
+            p.player.pauseVideo();
+        } else if (await p.player.getPlayerState() === 2) {
+            p.player.playVideo();
+        }
+    }
+</script>
+</html>
