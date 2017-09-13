@@ -9,6 +9,8 @@ li {
 
 .result {
     display: flex;
+    overflow-y: auto;
+    height: 400px;
 }
 
 .list {
@@ -16,13 +18,10 @@ li {
     flex-direction: column;
 }
 
-#searcher {
-    overflow: scroll;
-}
-
 iframe {
     height: 100px;
     width: 100%;
+    display: none;
 }
 
 body {
@@ -41,4 +40,19 @@ body {
     height: 100%;
     background-color: red;
     transition: 0.25s;
+    transition-timing-function: ease-in-out;
+}
+
+#other-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#other-controls button {
+    background-color: lightseagreen;
+    height: 26px;
+    border: 1px solid aqua;
+    border-radius: 13px;
 }

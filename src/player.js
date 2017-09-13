@@ -1,6 +1,6 @@
-import Vue from "./vue";
-import NodeYoutube from "youtube-node";
-import youtubePlayer from "youtube-player";
+import Vue from './vue';
+import NodeYoutube from 'youtube-node';
+import youtubePlayer from 'youtube-player';
 
 const yt = new NodeYoutube();
 yt.setKey('AIzaSyBj5xgFWvh0Y8jfxMePjW4nNbb9BNyLt50');
@@ -12,6 +12,12 @@ function playVideo(id) {
     currentId = id;
     player.loadVideoById(id);
     player.playVideo();
+    yt.getById(id, (error, result) => {
+        result.items.forEach((item) => {
+            console.log(item.snippet.title);
+            controls.title = item.snippet.title;
+        });
+    });
 }
 
 
@@ -34,11 +40,11 @@ function searchVideo(query) {
 }
 
 let app = new Vue({
-    el: "#searcher",
+    el: '#searcher',
     data: {
-        query: "",
+        query: '',
         results: [],
-        related: []
+        related: [],
     },
     methods: {
         search: () => {
@@ -47,7 +53,7 @@ let app = new Vue({
         relate: (id) => {
             yt.related(id, 10, (error, result) => {
                 app.related = [];
-                result.items.map(item => {
+                result.items.map((item) => {
                     yt.getById(item.id.videoId, (error, result) => {
                         if (error) {
                             console.log(error);
@@ -56,17 +62,20 @@ let app = new Vue({
                         }
                     });
                 });
-            })
+            });
         },
-        play: playVideo
-    }
+        play: playVideo,
+    },
 });
 
 let controls = new Vue({
     el: '#controls',
     data: {
-        progress: "0.5%"
-    }
+        progress: '0.5%',
+        currentTime: 0,
+        totalTime: 0,
+        title: '',
+    },
 });
 module.exports.controls = controls;
 module.exports.app = app;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
     <title>Player</title>
@@ -8,8 +8,11 @@
 <body>
 <div id="player"></div>
 <div id="controls">
-    <input type="range" id="volume">
-    <button id="pause" onclick="pausePlay()">Play/Pause</button>
+    <h2>{{title}}</h2>
+    <div id="other-controls">
+        <input type="range" id="volume" onchange="player.setVolume(this.value)">
+        <button id="pause" onclick="pausePlay()">⏸</button>
+        <span>{{currentTime}}/{{totalTime}}</span></div>
     <div id="loading-bar">
         <div id="loaded" v-bind:style="{width: progress}"></div>
     </div>
@@ -42,7 +45,26 @@
 </div>
 </body>
 <script>
+    String.prototype.toHHMMSS = function () {
+        const sec_num = parseInt(this, 10); // don't forget the second param
+        let hours = Math.floor(sec_num / 3600);
+        let minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+        let seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+        if (hours < 10) {
+            hours = "0" + hours;
+        }
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
+        if (seconds < 10) {
+            seconds = "0" + seconds;
+        }
+        return hours + ':' + minutes + ':' + seconds;
+    };
+
     let p = require('./player');
+    let player = p.player;
 
     async function pausePlay() {
         if (await p.player.getPlayerState() === 1) {
@@ -51,5 +73,16 @@
             p.player.playVideo();
         }
     }
+
+    async function updateLoadBar() {
+        let current = await player.getCurrentTime();
+        let total = await player.getDuration();
+        p.controls.progress = total === 0 ? "0%" : ((current / total) * 100) + "%";
+        p.controls.currentTime = (current + "").toHHMMSS();
+        p.controls.totalTime = (total + "").toHHMMSS();
+    }
+
+
+    setInterval(updateLoadBar, 250);
 </script>
 </html>
